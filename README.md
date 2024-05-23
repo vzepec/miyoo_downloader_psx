@@ -20,6 +20,11 @@ This `sh` shell script allows you to download PlayStation (PSX) game `.CHD` file
 ```bash
   cd scripts
 ```
+* Assign execution permissions with the following command (Only the first time):
+```bash
+  chmod 755 ./download_psx.sh
+```
+
 * Run the `download_psx.sh` file with the following command:
 ```bash
   ./download_psx.sh
@@ -34,7 +39,7 @@ When you run the script, the first page of `.chd` files will appear, numbered fr
 
 - Close the script by typing the letter `q` (Quit).
 
-**Important** UAfter downloading a file, remember to refresh the list of ROMs by going to the Games section and pressing the  `Select` button.
+**Important** After downloading a file, remember to refresh the list of ROMs by going to the Games section and pressing the  `Select` button.
 ## 🚀 Author
 
 - [@vzepec](https://github.com/vzepec)
