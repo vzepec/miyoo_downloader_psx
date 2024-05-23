@@ -22,7 +22,7 @@ This `sh` shell script allows you to download PlayStation (PSX) game `.CHD` file
 ```
 * Assign execution permissions with the following command (Only the first time):
 ```bash
-  chmod 755 ./download_psx.sh
+  chmod 755 download_psx.sh
 ```
 
 * Run the `download_psx.sh` file with the following command:
