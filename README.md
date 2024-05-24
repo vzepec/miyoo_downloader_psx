@@ -40,6 +40,12 @@ When you run the script, the first page of `.chd` files will appear, numbered fr
 - Close the script by typing the letter `q` (Quit).
 
 **Important** After downloading a file, remember to refresh the list of ROMs by going to the Games section and pressing the  `Select` button.
+
+## Demo
+![Run the script](20240523_234008.gif)
+
+![Choose and download ](20240523_234039.gif)
+
 ## 🚀 Author
 
 - [@vzepec](https://github.com/vzepec)
