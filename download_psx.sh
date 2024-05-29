@@ -1,21 +1,39 @@
 #!/bin/sh
 
-# Select source
-while true; do
-    echo -n "Select European sources (e) or USA sources (u): "
-    read -r choice
-    if [ "$choice" = "e" ] || [ "$choice" = "u" ]; then
-        break
-    else
-        echo "Invalid choice. Please enter 'e' for European sources or 'u' for USA sources."
+EUR_SOURCE='https://archive.org/download/chd_psx_eur/CHD-PSX-EUR/'
+USA_SOURCE='https://archive.org/download/chd_psx/CHD-PSX-USA/'
+
+# Define a function to select source and download file list
+select_source_and_download() {
+    while true; do
+        echo -n "Select European sources (e); USA sources (u) or both (b): "
+        read -r choice
+        if [ "$choice" = "e" ] || [ "$choice" = "u" ] || [ "$choice" = "b" ]; then
+            break
+        else
+            echo "Invalid choice. Please enter 'e' for European sources, 'u' for USA sources or 'b' for both"
+        fi
+    done
+
+    if [ "$choice" = "e" ]; then
+        BASE_URL="$EUR_SOURCE"
+        wget -q -O - "$BASE_URL" | grep -o 'href="[^\"]*\.chd"' | sed 's/ /%20/g' | sed 's/href="//' | sed 's/"//' > file_list.txt
+    elif [ "$choice" = "u" ]; then
+        BASE_URL="$USA_SOURCE"
+        wget -q -O - "$BASE_URL" | grep -o 'href="[^\"]*\.chd"' | sed 's/ /%20/g' | sed 's/href="//' | sed 's/"//' > file_list.txt
+    elif [ "$choice" = "b" ]; then
+        BASE_URL="$EUR_SOURCE"
+        BASE_URL2="$USA_SOURCE"
+        wget -q -O - "$BASE_URL" | grep -o 'href="[^\"]*\.chd"' | sed 's/ /%20/g' | sed 's/href="//' | sed 's/"//' > file_list_2.txt
+        wget -q -O - "$BASE_URL2" | grep -o 'href="[^\"]*\.chd"' | sed 's/ /%20/g' | sed 's/href="//' | sed 's/"//' > file_list_3.txt
+        cat file_list_2.txt >> file_list.txt
+        cat file_list_3.txt >> file_list.txt
     fi
-done
 
-# Set BASE_URL based on choice
-BASE_URL=$(if [ "$choice" = "e" ]; then echo "https://archive.org/download/chd_psx_eur/CHD-PSX-EUR/"; else echo "https://archive.org/download/chd_psx/CHD-PSX-USA/"; fi)
+    sort -u file_list.txt -o file_list.txt
+}
 
-# Download file list
-wget -q -O - "$BASE_URL" | grep -o 'href="[^\"]*\.chd"' | sed 's/ /%20/g' | sed 's/href="//' | sed 's/"//' > file_list.txt
+select_source_and_download
 
 show_page() {
     clear
@@ -24,9 +42,10 @@ show_page() {
     local end=$((start + 10))
     local i=0
     local line
-
+    local total_files=$(wc -l < file_list.txt)
     echo "Page $((page + 1)):"
-    echo "------"
+    echo "Total files: $total_files"
+    echo "------------------"
     echo ""
     while IFS= read -r line && [ $i -lt $end ]; do
         i=$((i + 1))
@@ -53,9 +72,20 @@ download_file() {
     local i=0
     local line
     local file_name
+    local BASE_URL
 
     while IFS= read -r line && [ $i -le $index ]; do
         if [ $i -eq $index ]; then
+            # Search for the selected file in file_list.txt
+            if grep -q "$line" file_list2.txt; then
+                BASE_URL="$EUR_SOURCE"
+            elif grep -q "$line" file_list_3.txt; then
+                BASE_URL="$USA_SOURCE"
+            else
+                echo "File not found"
+                break
+            fi
+
             # Download selected file
             wget -P "../Roms/PS/" "$BASE_URL$line"
 
@@ -75,9 +105,8 @@ download_file() {
 page=0
 while true; do
     show_page "$page"
-    echo -n "Select a file to download (number), navigate (n/p), or quit (q): "
+    echo -n "Select a file to download (number), navigate (n/p), menu selector (m) or quit (q): "
     read -r choice
-
     if echo "$choice" | grep -q '^[0-9]\+$'; then
         index=$((choice - 1))
         echo "Downloading..."
@@ -94,6 +123,9 @@ while true; do
         else
             echo "Already at the first page."
         fi
+    elif [ "$choice" = "m" ]; then
+        select_source_and_download
+        page=0
     elif [ "$choice" = "q" ]; then
         break
     else
@@ -103,3 +135,4 @@ done
 
 # Cleanup
 rm file_list.txt
+rm -f file_list_2.txt
