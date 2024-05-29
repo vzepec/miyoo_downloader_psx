@@ -5,7 +5,7 @@ This `sh` shell script allows you to download `.CHD` files of PlayStation (PSX) 
 
 The script displays a paginated list of available files, allows you to download the ones you choose and stores them in `../Roms/PS`.
 
-It has a font selector, currently supports a European and US font.
+It has a source selector, currently supports a European and US sources.
 
 
 # Requirements
