@@ -1,11 +1,21 @@
 #!/bin/sh
 
-# URL base
-BASE_URL="https://archive.org/download/chd_psx_eur/CHD-PSX-EUR/"
+# Select source
+while true; do
+    echo -n "Select European sources (e) or USA sources (u): "
+    read -r choice
+    if [ "$choice" = "e" ] || [ "$choice" = "u" ]; then
+        break
+    else
+        echo "Invalid choice. Please enter 'e' for European sources or 'u' for USA sources."
+    fi
+done
+
+# Set BASE_URL based on choice
+BASE_URL=$(if [ "$choice" = "e" ]; then echo "https://archive.org/download/chd_psx_eur/CHD-PSX-EUR/"; else echo "https://archive.org/download/chd_psx/CHD-PSX-USA/"; fi)
 
 # Download file list
 wget -q -O - "$BASE_URL" | grep -o 'href="[^\"]*\.chd"' | sed 's/ /%20/g' | sed 's/href="//' | sed 's/"//' > file_list.txt
-
 
 show_page() {
     clear
